@@ -1,0 +1,40 @@
+name: integration
+
+on:
+  pull_request:
+    branches:
+      - "*"
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go 1.16
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.16
+
+      - name: Check ou t code into the Go module directory
+        uses: actions/checkout@v2
+      
+      - name: Cache go module
+        uses: actions/cache@v1
+        id: cache-go
+        with:
+            path: ~/go/pkg/mod
+            key: ${{ env.cache-version }}-${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+            restore-keys: |
+                ${{ env.cache-version }}-${{ runner.os }}-go-
+
+      - name: Get dependencies
+        if: steps.cache-go.outputs.cache-hit != 'true'
+        run: |
+            go get -v -t -d ./...
+
+      - name: Build
+        run: |
+          GOOS=linux GOARCH=amd64 go build -o bin/jmerge-cli cli/main.go
+
+      - name: Test
+        run: |
+          go test -v --cover ./...
