@@ -54,6 +54,31 @@ func TestMergeMap(t *testing.T) {
 				"fuga": 1,
 			},
 		},
+		{
+			name: "merge nested json",
+			in: in{
+				base: map[string]interface{}{
+					"hoge": "hoge",
+					"fuga": map[string]interface{}{
+						"fizz": "fizz",
+						"buzz": "buzz",
+					},
+				},
+				overlay: map[string]interface{}{
+					"hoge": "hoge001",
+					"fuga": map[string]interface{}{
+						"fizz": "fizz001",
+					},
+				},
+			},
+			out: map[string]interface{}{
+				"hoge": "hoge001",
+				"fuga": map[string]interface{}{
+					"fizz": "fizz001",
+					"buzz": "buzz",
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {

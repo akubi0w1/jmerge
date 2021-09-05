@@ -77,11 +77,17 @@ func mergeMap(base, overlay map[string]interface{}, mode MergeMode) map[string]i
 	result := base
 	if mode == MergeModeAdd {
 		for k, v := range overlay {
+			if _, ok := result[k].(map[string]interface{}); ok {
+				v = mergeMap(result[k].(map[string]interface{}), v.(map[string]interface{}), mode)
+			}
 			result[k] = v
 		}
 	} else {
 		for k, v := range overlay {
 			if result[k] != nil {
+				if _, ok := result[k].(map[string]interface{}); ok {
+					v = mergeMap(result[k].(map[string]interface{}), v.(map[string]interface{}), mode)
+				}
 				result[k] = v
 			}
 		}
