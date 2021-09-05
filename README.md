@@ -11,7 +11,7 @@ jmerge can merge multiple json files.
 $ go get github.com/akubi0w1/jmerge
 
 # jmerge-cli - go get
-$ go get github.com/akubi0w1/jmerge
+$ go get github.com/akubi0w1/jmerge/jmerge-cli
 
 # jmerge-cli - brew
 $ brew tap akubi0w1/tap
