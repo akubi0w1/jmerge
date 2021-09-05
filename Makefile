@@ -21,7 +21,7 @@ build-doc:
 	-e "GOPATH=/tmp/go" \
 	-e "GO111MODULE=off" \
 	-p 127.0.0.1:6060:$(DOC_PORT) \
-	-v ${PWD}:/jmerge/go/src \
+	-v ${PWD}/../:/jmerge/go/src \
 	--name $(DOC_CONTAINER_NAME) \
 	golang \
 	bash -c " \
@@ -33,4 +33,3 @@ build-doc:
 		/tmp/go/bin/godoc -goroot=/jmerge/go -http=:6060 \
 		"
 	@sed "/^doc is running/q" <(docker logs -f $(DOC_CONTAINER_NAME))
-
