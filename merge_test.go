@@ -1,4 +1,4 @@
-package helper
+package jmerge
 
 import (
 	"testing"
@@ -58,7 +58,7 @@ func TestMergeMap(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			out := MergeMap(tt.in.base, tt.in.overlay, tt.in.mode)
+			out := mergeMap(tt.in.base, tt.in.overlay, tt.in.mode)
 			assert.Equal(t, tt.out, out)
 		})
 	}

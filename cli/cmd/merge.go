@@ -1,11 +1,10 @@
 package cmd
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
 	"path/filepath"
 
+	"github.com/akubi0w1/jmerge"
 	"github.com/akubi0w1/jmerge/helper"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -18,68 +17,38 @@ var MergeCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		readConfig()
 
-		for _, merge := range config.Merges {
+		for _, merge := range cfg.Merges {
 			for _, target := range merge.Targets {
-				basePath := helper.CleanJoinPath(config.Base, target)
-				if !filepath.IsAbs(config.Base) {
+				basePath := helper.CleanJoinPath(cfg.Base, target)
+				if !filepath.IsAbs(cfg.Base) {
 					basePath = helper.CleanJoinPath(filepath.Dir(configFile), basePath)
 				}
 
 				overlayPath := helper.CleanJoinPath(filepath.Dir(configFile), target)
 
-				// read base file
-				base, err := helper.ReadFile(basePath)
-				if err != nil {
-					return err
-				}
-				baseMap := make(map[string]interface{})
-				if err = json.Unmarshal([]byte(base), &baseMap); err != nil {
-					return err
-				}
+				fmt.Printf("merge: base=%s => overlay=%s\n", basePath, overlayPath)
 
-				// read overlay file
-				overlay, err := helper.ReadFile(overlayPath)
-				if err != nil {
-					return err
-				}
-				overlayMap := make(map[string]interface{})
-				if err = json.Unmarshal([]byte(overlay), &overlayMap); err != nil {
-					return err
-				}
-
-				resultMap := helper.MergeMap(baseMap, overlayMap, helper.MergeMode(merge.Mode))
-				result, err := json.Marshal(resultMap)
+				out, err := jmerge.MergeJSONByFile(basePath, overlayPath, merge.Mode, cfg.Format)
 				if err != nil {
 					return err
 				}
 
-				var out bytes.Buffer
-				if config.Format {
-					err = json.Indent(&out, result, "", "  ")
-					if err != nil {
-						return err
-					}
-				} else {
-					if _, err = out.Write(result); err != nil {
-						return err
-					}
-				}
-
-				outputPath := helper.CleanJoinPath(config.Output, config.Namespace, target)
+				outputPath := helper.CleanJoinPath(cfg.Output, cfg.Namespace, target)
 				if !filepath.IsAbs(outputPath) {
 					outputPath = helper.CleanJoinPath(filepath.Dir(configFile), outputPath)
 				}
-				if err := helper.WriteFile(filepath.Dir(outputPath), filepath.Base(outputPath), out.Bytes()); err != nil {
+				if err := helper.WriteFile(filepath.Dir(outputPath), filepath.Base(outputPath), out); err != nil {
 					return err
 				}
 			}
 		}
+		fmt.Printf("merge complete!\n")
 
 		return nil
 	},
 }
 
-type Config struct {
+type config struct {
 	// Namespace
 	Namespace string
 
@@ -93,19 +62,35 @@ type Config struct {
 	Format bool
 
 	// Merges
-	Merges []MergeConfig
+	Merges []mergeConfig
 }
 
-type MergeConfig struct {
+// Validate validates config
+func (c *config) Validate() error {
+	if c.Namespace == "" {
+		return fmt.Errorf("config error: namespace is required")
+	}
+
+	if c.Base == "" {
+		return fmt.Errorf("config error: output is required")
+	}
+
+	if c.Output == "" {
+		return fmt.Errorf("config error: output is required")
+	}
+	return nil
+}
+
+type mergeConfig struct {
 	// Mode is merge mode.
 	// value are add or noAdd
-	Mode string
+	Mode jmerge.MergeMode
 
 	// Targets are targets of merge
 	Targets []string
 }
 
-var config = Config{}
+var cfg = config{}
 
 var configFile string
 
@@ -140,7 +125,11 @@ func readConfig() {
 		cobra.CheckErr(err)
 	}
 
-	if err := viper.Unmarshal(&config); err != nil {
+	if err := viper.Unmarshal(&cfg); err != nil {
+		cobra.CheckErr(err)
+	}
+
+	if err := cfg.Validate(); err != nil {
 		cobra.CheckErr(err)
 	}
 }
