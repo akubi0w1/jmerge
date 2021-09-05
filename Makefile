@@ -5,7 +5,7 @@ DOC_PORT=6060
 ##########################
 ## jmerge-cli
 build-cli:
-	go build -o bin/jmerge-cli cli/main.go
+	go build -o bin/jmerge-cli jmerge-cli/main.go
 
 test:
 	go test -v --cover ./...
