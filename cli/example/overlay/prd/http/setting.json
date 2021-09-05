@@ -1,0 +1,4 @@
+{
+  "mysqlPort": "3307",
+  "httpPort": "80"
+}

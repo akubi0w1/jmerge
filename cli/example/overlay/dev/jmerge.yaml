@@ -1,0 +1,19 @@
+namespace: dev
+
+# path of base file
+base: ../../base
+output: ../../output
+
+# true is format output json
+format: true
+
+# merge target
+merges:
+  # mode is add or ignore
+  - mode: add
+    targets:
+      - http/setting.json
+  
+  # - mode: ignore
+  #   targets:
+  #     - http/setting.json
