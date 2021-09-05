@@ -33,7 +33,7 @@ jobs:
 
       - name: Build
         run: |
-          GOOS=linux GOARCH=amd64 go build -o bin/jmerge-cli cli/main.go
+          GOOS=linux GOARCH=amd64 go build -o bin/jmerge-cli jmerge-cli/main.go
 
       - name: Test
         run: |

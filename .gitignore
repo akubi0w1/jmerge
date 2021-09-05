@@ -1,2 +1,6 @@
 # binary
 bin/
+assets/
+
+# vscode
+.DS_Store

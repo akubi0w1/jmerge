@@ -4,29 +4,20 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-
-	"github.com/akubi0w1/jmerge/helper"
 )
 
-// MergeJSONByFile merges multiple json files
-func MergeJSONByFile(baseFilePath, overlayFilePath string, mode MergeMode, isFormat bool) ([]byte, error) {
+// MergeJSON merges multiple json.
+// base and overlay is json bytes.
+func MergeJSON(base, overlay []byte, mode MergeMode, isFormat bool) ([]byte, error) {
 	// read base file
-	base, err := helper.ReadFile(baseFilePath)
-	if err != nil {
-		return nil, err
-	}
 	baseMap := make(map[string]interface{})
-	if err = json.Unmarshal([]byte(base), &baseMap); err != nil {
+	if err := json.Unmarshal([]byte(base), &baseMap); err != nil {
 		return nil, err
 	}
 
 	// read overlay file
-	overlay, err := helper.ReadFile(overlayFilePath)
-	if err != nil {
-		return nil, err
-	}
 	overlayMap := make(map[string]interface{})
-	if err = json.Unmarshal([]byte(overlay), &overlayMap); err != nil {
+	if err := json.Unmarshal([]byte(overlay), &overlayMap); err != nil {
 		return nil, err
 	}
 

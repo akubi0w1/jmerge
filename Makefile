@@ -3,12 +3,25 @@ DOC_CONTAINER_NAME=jmerge-doc
 DOC_PORT=6060
 
 ##########################
+## jmerge
+test:
+	go test -v --cover ./...
+
+##########################
 ## jmerge-cli
 build-cli:
 	go build -o bin/jmerge-cli jmerge-cli/main.go
 
-test:
-	go test -v --cover ./...
+build-asset: # build-asset VERSION=0.1.1
+	@echo "------------ linux build ------------"
+	GOOS=linux GOARCH=amd64 go build -o assets/tmp/linux/jmerge-cli jmerge-cli/main.go
+	mkdir -p assets/$(VERSION)/linux
+	tar -zcvf assets/$(VERSION)/linux/jmerge-cli_$(VERSION)_linux_amd64.tar.gz -C assets/tmp/linux jmerge-cli
+	@echo "------------ macOS build ------------"
+	GOOS=darwin GOARCH=amd64 go build -o assets/tmp/darwin/jmerge-cli jmerge-cli/main.go
+	mkdir -p assets/$(VERSION)/darwin
+	tar -zcvf assets/$(VERSION)/darwin/jmerge-cli_$(VERSION)_macOS_amd64.tar.gz -C assets/tmp/darwin jmerge-cli
+	rm -rf assets/tmp
 
 #######################################
 ## build document

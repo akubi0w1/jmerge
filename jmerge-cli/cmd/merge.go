@@ -19,16 +19,26 @@ var MergeCmd = &cobra.Command{
 
 		for _, merge := range cfg.Merges {
 			for _, target := range merge.Targets {
+				// prepare base
 				basePath := helper.CleanJoinPath(cfg.Base, target)
 				if !filepath.IsAbs(cfg.Base) {
 					basePath = helper.CleanJoinPath(filepath.Dir(configFile), basePath)
 				}
+				base, err := helper.ReadFile(basePath)
+				if err != nil {
+					return err
+				}
 
+				// prepare overlay
 				overlayPath := helper.CleanJoinPath(filepath.Dir(configFile), target)
+				overlay, err := helper.ReadFile(overlayPath)
+				if err != nil {
+					return err
+				}
 
 				fmt.Printf("merge: base=%s => overlay=%s\n", basePath, overlayPath)
 
-				out, err := jmerge.MergeJSONByFile(basePath, overlayPath, merge.Mode, cfg.Format)
+				out, err := jmerge.MergeJSON(base, overlay, merge.Mode, cfg.Format)
 				if err != nil {
 					return err
 				}
