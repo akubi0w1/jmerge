@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/akubi0w1/jmerge/cli/cmd"
+	"github.com/akubi0w1/jmerge/jmerge-cli/cmd"
 )
 
 func main() {
