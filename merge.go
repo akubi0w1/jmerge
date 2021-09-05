@@ -8,7 +8,7 @@ import (
 	"github.com/akubi0w1/jmerge/helper"
 )
 
-// MergeJSONByFile
+// MergeJSONByFile merges multiple json files
 func MergeJSONByFile(baseFilePath, overlayFilePath string, mode MergeMode, isFormat bool) ([]byte, error) {
 	// read base file
 	base, err := helper.ReadFile(baseFilePath)
